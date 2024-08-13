@@ -4,9 +4,12 @@ botoesCategorias.forEach((botao) => {
   botao.addEventListener("click", () => {
     const categoriaSelecionada = botao.getAttribute("name");
 
+    associarPainel(categoriaSelecionada)
     filtrarPorCategoria(categoriaSelecionada);
     atualizarEstadosDosBotoes(categoriaSelecionada);
   });
+
+  botao.addEventListener('keydown', mudarFocoPorTeclado)
 });
 
 function filtrarPorCategoria(filtro) {
@@ -26,6 +29,33 @@ function atualizarEstadosDosBotoes(categoriaSelecionada) {
   botoesCategorias.forEach((botao) => {
     const botaoFoiSelecionado = botao.getAttribute("name") === categoriaSelecionada;
 
-    botao.classList.toggle("selecionado", botaoFoiSelecionado);
+    // botao.classList.toggle("selecionado", botaoFoiSelecionado);
+    botao.ariaSelected = botaoFoiSelecionado
+    botao.setAttribute('tabindex', botaoFoiSelecionado ? 0 : -1)
   })
+}
+
+function associarPainel(categoriaSelecionada) {
+  const painel = document.querySelector('[role="tabpanel"]')
+  const idBotao = document.querySelector(`[name="${categoriaSelecionada}"]`).id
+  painel.setAttribute("aria-labelledby", idBotao)
+}
+
+const tablist = document.querySelector('[role="tablist"]')
+function mudarFocoPorTeclado(evento) {
+  const botaoAtual = evento.target;
+
+  if(evento.key === 'ArrowRight') {
+    if(botaoAtual === tablist.lastElementChild) {
+      tablist.firstElementChild.focus()
+    } else {
+      botaoAtual.nextElementSibling.focus()
+    }
+  } else if(evento.key === 'ArrowLeft') {
+    if(botaoAtual === tablist.firstElementChild) {
+      tablist.lastElementChild.focus()
+    } else {
+      botaoAtual.previousElementSibling.focus()
+    }
+  }
 }
